@@ -13,3 +13,77 @@
  *= require_tree .
  *= require_self
  */
+ body, header, h1, section, article, div, ul, li {
+   margin: 0;
+   padding: 0;
+   border: 0;
+
+   font:inherit;
+   text-align: inherit;
+   text-decoration: inherit;
+
+   background: transparent;
+ }
+
+ ul {
+   list-style: none;
+ }
+
+ .group:after {
+   content: "";
+   display: block;
+   clear: both;
+ }
+
+ body{
+   text-align: center;
+   font: sans-serif;
+ }
+
+ h1{
+   font-size: 12px;
+   text-align: center;
+ }
+
+ .game-board {
+   display: block;
+   width: 500px;
+   height: 500px;
+   margin: auto;
+   border: 5px solid black;
+   background: #7D360C;
+ }
+
+ .game-board > ul {
+   display: block;
+   float: left;
+   width: 100%;
+   height: 10px;
+ }
+
+ .game-board > ul > li {
+   display: block;
+   float: left;
+   width: 8px;
+   height: 8px;
+   border: 1px solid black;
+ }
+
+ .snake1 {
+   background: #2C8A1B;
+ }
+
+ .snake2 {
+   background: #180DC9;
+ }
+
+ .portal {
+   background: #120F4A;
+ }
+
+ .apple {
+   background: #C91000;
+   -moz-border-radius: 5px;
+ 	-webkit-border-radius: 5px;
+ 	border-radius: 5px;
+ }
