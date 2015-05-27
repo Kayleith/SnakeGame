@@ -13,7 +13,7 @@
  *= require_tree .
  *= require_self
  */
-body, header, h1, section, article, div, ul, li {
+body, header, h1, section, article, div, ul, li, a {
   margin: 0;
   padding: 0;
   border: 0;
@@ -85,14 +85,29 @@ h1 {
   float: right;
   display: block;
   width: 100px;
-  background: orange;
+  background: #C96427;
 }
 
 .games-selection-menu {
   float: right;
   display: block;
   width: 100px;
-  background: blue;
+  background: #1509C9;
+}
+
+.menu-item {
+  display: block;
+  position: relative;
+  width: 100px;
+  height: 50px;
+  font-size: 20px;
+}
+.menu-item label {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .game-board {

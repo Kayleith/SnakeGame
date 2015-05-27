@@ -297,10 +297,10 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
       this.board[row][col] = new SnakeGame.Tunnel(row, col, row1, col1);
       this.board[row1][col1] = this.board[row][col];
 
-      this.$li.eq(row * this.maxX + col).addClass("tunnel").text(row*col);
-      this.$li.eq(row1 * this.maxX + col1).addClass("tunnel").text(row*col);
-
       this.numTunnels += 1;
+
+      this.$li.eq(row * this.maxX + col).addClass("tunnel").text(this.numTunnels);
+      this.$li.eq(row1 * this.maxX + col1).addClass("tunnel").text(this.numTunnels);
       return;
     }
     this.generateTunnel();

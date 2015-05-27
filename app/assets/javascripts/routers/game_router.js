@@ -4,7 +4,24 @@ SnakeGame.Routers.GameRouter = Backbone.Router.extend({
   },
 
   routes: {
+    "": "gameSelect",
     "snake": "snake",
+    "asteroids": "asteroids",
+    "spaceinvaders": "spaceinvaders"
+
+  },
+
+  gameSelect: function() {
+
+  },
+
+  spaceinvaders: function() {
+    var gameView = new SnakeGame.Views.SpaceInvaders();
+    this._swapView(gameView);
+  },
+
+  asteroids: function() {
+
   },
 
   snake: function() {
