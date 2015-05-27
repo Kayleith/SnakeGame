@@ -1,9 +1,26 @@
-<article class="game-board group">
+<% var x = X; %>
+<% if(X > 30) { x = x/2;}%>
+
+<section class="games-selection-menu" style="height: <%=x*20 + 10%>px">
+</section>
+
+<article class="game-board group" style="width: <%=x*20%>px; height: <%=x*20%>px;">
   <% for (var i = 0; i < X; i++) { %>
-    <ul class='row'>
+    <% if(X <= 30) {%>
+      <ul>
+    <% } else { %>
+      <ul id="resize-ul">
+    <% } %>
       <% for (var j = 0; j < Y; j++) { %>
-        <li></li>
+        <% if(X <= 30) {%>
+          <li></li>
+        <% } else { %>
+          <li id="resize-li"></li>
+        <% } %>
       <% } %>
     </ul>
   <% } %>
 </article>
+
+<section class="snake-score" style="height: <%=x*20 + 10%>px">
+</section>

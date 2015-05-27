@@ -4,17 +4,11 @@ SnakeGame.Routers.GameRouter = Backbone.Router.extend({
   },
 
   routes: {
-    "setupSnake": "setUpSnakeGame",
-    "startSnake": "startGame",
+    "snake": "snake",
   },
 
-  setUpSnakeGame: function() {
-
-  },
-
-  startGame: function(options) {
-    var specs = options || {players: 1, maxX: 30, maxY: 30, speed: 100};
-    var gameView = new SnakeGame.Views.Game(specs);
+  snake: function() {
+    var gameView = new SnakeGame.Views.SnakeGame();
     this._swapView(gameView);
   },
 

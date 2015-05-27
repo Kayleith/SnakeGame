@@ -45,10 +45,60 @@ h1 {
   text-align: center;
 }
 
-.game-board {
+.board > div{
+  content: "";
   display: block;
-  width: 600px;
-  height: 600px;
+  clear: both;
+  width: 820px;
+  position: absolute;
+  height: 610px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.snake-options {
+  display: block;
+  float: right;
+}
+.snake-options > article {
+  height: 85px;
+  width: 708px;
+  border: 1px solid black;
+  font-size: 60px;
+  text-align: center;
+}
+.snake-board-range {
+  height: 85px;
+  width: 708px;
+  border: 1px solid black;
+  text-align: center;
+}
+.snake-board-range > h1 {
+  font-size: 36px;
+}
+
+.snake-options > article:hover {
+  background: grey;
+}
+
+.snake-score {
+  float: right;
+  display: block;
+  width: 100px;
+  background: orange;
+}
+
+.games-selection-menu {
+  float: right;
+  display: block;
+  width: 100px;
+  background: blue;
+}
+
+.game-board {
+  float: right;
+  position: relative;
+  display: block;
   margin: auto;
   border: 5px solid black;
   background: #7D360C;
@@ -60,6 +110,9 @@ h1 {
   width: 100%;
   height: 20px;
 }
+.game-board > ul#resize-ul {
+  height: 10px;
+}
 
 .game-board > ul > li {
   display: block;
@@ -67,8 +120,12 @@ h1 {
   width: 20px;
   height: 20px;
 }
+.game-board > ul > li#resize-li {
+  width: 10px;
+  height: 10px;
+}
 
-.game-board > ul > li.snake1 {
+.game-board > ul > li.snake {
   background: #2C8A1B;
   width: 18px;
   height: 18px;
@@ -78,98 +135,84 @@ h1 {
   border-top: 1px solid #1C5711;
 }
 
-.game-board > ul > li.snake2 {
-  background: #180DC9;
-  width: 18px;
-  height: 18px;
-  border-right: 1px solid #120A96;
-  border-left: 1px solid #120A96;
-  border-bottom: 1px solid #120A96;
-  border-top: 1px solid #120A96;
+.game-board > ul > li#resize-li.snake {
+  background: #2C8A1B;
+  width: 8px;
+  height: 8px;
+  border-right: 1px solid #1C5711;
+  border-left: 1px solid #1C5711;
+  border-bottom: 1px solid #1C5711;
+  border-top: 1px solid #1C5711;
 }
 
-
-.game-board > ul > li.snake1.headE {
-  border-right: 10px solid #1C5711;
+.game-board > ul > li.snake.headE {
+  border-right: 1px solid #1C5711;
   border-left: 0;
   border-bottom: 1px solid #1C5711;
   border-top: 1px solid #1C5711;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
-  width: 10px;
+}
+.game-board > ul > li#resize-li.snake.headE {
+  border-right: 1px solid #1C5711;
+  border-left: 0;
+  border-bottom: 1px solid #1C5711;
+  border-top: 1px solid #1C5711;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
-.game-board > ul > li.snake1.headW {
+.game-board > ul > li.snake.headW {
   border-right: 0;
-  border-left: 10px solid #1C5711;
+  border-left: 1px solid #1C5711;
   border-bottom: 1px solid #1C5711;
   border-top: 1px solid #1C5711;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
-  width: 10px;
 }
-
-.game-board > ul > li.snake1.headN {
-  border-right: 1px solid #1C5711;
+.game-board > ul > li#resize-li.snake.headW {
   border-left: 1px solid #1C5711;
-  border-bottom: 0;
-  border-top: 10px solid #1C5711;
-  border-top-right-radius: 10px;
-  border-top-left-radius: 10px;
-  height: 10px;
-}
-
-.game-board > ul > li.snake1.headS {
-  border-right: 1px solid #1C5711;
-  border-left: 1px solid #1C5711;
-  border-bottom: 10px solid #1C5711;
-  border-top: 0;
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
-  height: 10px;
-}
-
-
-.game-board > ul > li.snake2.headE {
-  border-right: 10px solid #120A96;
-  border-left: 0;
-  border-bottom: 1px solid #120A96;
-  border-top: 1px solid #120A96;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  width: 10px;
-}
-
-.game-board > ul > li.snake2.headW {
   border-right: 0;
-  border-left: 10px solid #120A96;
-  border-bottom: 1px solid #120A96;
-  border-top: 1px solid #120A96;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-  width: 10px;
+  border-bottom: 1px solid #1C5711;
+  border-top: 1px solid #1C5711;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 }
 
-.game-board > ul > li.snake2.headN {
-  border-right: 1px solid #120A96;
-  border-left: 1px solid #120A96;
+
+.game-board > ul > li.snake.headN {
+  border-right: 1px solid #1C5711;
+  border-left: 1px solid #1C5711;
   border-bottom: 0;
-  border-top: 10px solid #120A96;
+  border-top: 1px solid #1C5711;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
-  height: 10px;
+}
+.game-board > ul > li#resize-li.snake.headN {
+  border-right: 1px solid #1C5711;
+  border-left: 1px solid #1C5711;
+  border-bottom: 0;
+  border-top: 1px solid #1C5711;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
 }
 
-.game-board > ul > li.snake2.headS {
-  border-right: 1px solid #120A96;
-  border-left: 1px solid #120A96;
-  border-bottom: 10px solid #120A96;
+.game-board > ul > li.snake.headS {
+  border-right: 1px solid #1C5711;
+  border-left: 1px solid #1C5711;
+  border-bottom: 1px solid #1C5711;
   border-top: 0;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
-  height: 10px;
 }
-
+.game-board > ul > li#resize-li.snake.headS {
+  border-right: 1px solid #1C5711;
+  border-left: 1px solid #1C5711;
+  border-top: 0;
+  border-bottom: 1px solid #1C5711;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
 
 .game-board > ul > li.tunnel {
   background: #4A2007;
@@ -183,6 +226,16 @@ h1 {
   color: white;
 }
 
+.game-board > ul > li#resize-li.tunnel {
+  width: 8px;
+  height: 8px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  font-size: 8px;
+}
+
+
 .game-board > ul > li.apple {
   border: 1px solid #960C00;
   background: #C91000;
@@ -191,4 +244,24 @@ h1 {
   -moz-border-radius: 9px;
   -webkit-border-radius: 9px;
   border-radius: 9px;
+}
+.game-board > ul > li#resize-li.apple {
+  width: 8px;
+  height: 8px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  font-size: 8px;
+}
+
+
+.game-board > ul > li.rock {
+  border: 1px solid #999999;
+  background: #4C4C4C;
+  width: 18px;
+  height: 18px;
+}
+.game-board > ul > li#resize-li.rock {
+  width: 8px;
+  height: 8px;
 }
