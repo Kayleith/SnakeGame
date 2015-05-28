@@ -81,5 +81,3 @@ test:
 production:
   <<: *default
   database: SnakeGame_production
-  username: SnakeGame
-  password: <%= ENV['SNAKEGAME_DATABASE_PASSWORD'] %>

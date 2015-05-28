@@ -157,7 +157,6 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
 
   start: function() {
     this.generateTunnel();
-    this.generateRock();
     this.generateApple();
     this.intervalId = window.setInterval(
       this.step.bind(this),
@@ -167,6 +166,8 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
 
   step: function() {
     this.time += this.speed;
+
+    if(this.numRocks === 0 && this.time > 5000) this.generateRock();
 
     if(this.time % 10000 === 0) {
       this.appleProb *= this.probMultiplier;
