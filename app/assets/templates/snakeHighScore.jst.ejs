@@ -1,0 +1,7 @@
+<h1>High Scores for Snake <%=dimension%>x<%=dimension%> <%=difficulty.charAt(0).toUpperCase() + difficulty.substring(1)%> Difficulty</h1>
+<% var i = 1; %>
+<% collection.each(function(score) { %>
+    <label><%= i %>:  <%=score.escape("name")%> <%=score.escape("score")%></label><br>
+    <% i+= 1; %>
+<% }) %>
+Press h to close

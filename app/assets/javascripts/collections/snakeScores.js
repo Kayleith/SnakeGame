@@ -1,5 +1,7 @@
-SnakeGame.Collections.SnakeScore = Backbone.Collection.extend({
-  urlRoot: "/high_score/snake",
+SnakeGame.Collections.SnakeScores = Backbone.Collection.extend({
+  url: "/high_scores/snake",
+  model: SnakeGame.Models.SnakeScore,
+
   getOrFetch: function(id) {
     var model = this.get(id);
     if(model) {
@@ -9,5 +11,9 @@ SnakeGame.Collections.SnakeScore = Backbone.Collection.extend({
       model.fetch();
     }
     return model;
+  },
+
+  comparator: function(model) {
+    return -(model.get("score"));
   }
 });

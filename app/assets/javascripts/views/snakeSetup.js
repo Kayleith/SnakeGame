@@ -18,6 +18,6 @@ SnakeGame.Views.SetupSnake = Backbone.CompositeView.extend({
 
   startgame: function(event) {
     var dim = parseInt(this.$("#rangevalue").val());
-    this.parent.start({players: 1, maxX: dim, maxY: dim, difficulty: event.currentTarget.className})
+    this.parent.start({maxX: dim, maxY: dim, difficulty: event.currentTarget.className})
   }
 });

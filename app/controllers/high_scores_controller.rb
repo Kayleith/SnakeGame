@@ -18,18 +18,10 @@ class HighScoresController < ApplicationController
   end
 
   def snake
-    binds = {
-      gamename: params[:gamename],
-      difficulty: params[:difficulty],
-      dimension: params[:dimension]
-    }
-
-    @high_scores = HighScore.all.where(<<-SQL, binds)
-                                        high_scores.gamename = :gamename AND
-                                        high_scores.difficulty = :difficulty AND
-                                        high_scores.dimenion = :dimenion
-                                      SQL
-    render @high_scores
+    @high_scores = HighScore.where("high_scores.gamename = ? AND
+                                   high_scores.difficulty = ? AND
+                                   high_scores.dimension = ?", params[:gamename], params[:difficulty],params[:dimension].to_i)
+    render json: @high_scores
   end
   # GET /high_scores/1/edit
   def edit
@@ -64,7 +56,6 @@ class HighScoresController < ApplicationController
       end
     end
   end
-
   # DELETE /high_scores/1
   # DELETE /high_scores/1.json
   def destroy

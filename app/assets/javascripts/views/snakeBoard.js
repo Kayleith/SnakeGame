@@ -3,6 +3,8 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
   template: JST["gameBoard"],
 
   initialize: function(options, parent) {
+    this.collection = options.collection;
+
     this.parent = parent;
 
     this.difficulty = options.difficulty;
@@ -17,7 +19,36 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
 
   events: {
     "click .restart-snake": "restart",
-    "click .snake-menu": "main"
+    "click .snake-menu": "main",
+    "click .snake-high-score-button": "highScore",
+    "click .submit-high-score": "submitScore"
+  },
+
+  submitScore: function(e) {
+    e.preventDefault();
+    var name = $(".snake-score-name").val();
+    if (name === "") name = "unknown";
+
+    var model = new SnakeGame.Models.SnakeScore({
+      name: name,
+      gamename: "snake",
+      score: this.snake.score,
+      difficulty: this.difficulty,
+      dimension: this.maxX
+    });
+
+    model.save({}, {
+      success: function() {
+        this.collection.add(model);
+        this.$(".snake-highscore-form-area").empty();
+        this.$(".snake-high-score-button").click();
+      }.bind(this)
+    })
+  },
+
+  highScore: function(event) {
+    event.preventDefault();
+    this.$(".modal-snake-game").html(JST["snakeHighScore"]({dimension: this.maxX, difficulty: this.difficulty, collection: this.collection})).toggleClass("visible");
   },
 
   main: function(event) {
@@ -96,6 +127,13 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
       this.probMultiplier = 3;
       break;
     }
+
+    this.collection.fetch({
+      data: { difficulty: this.difficulty,
+              gamename: "snake",
+              dimension: this.maxX
+            }
+    });
 
     this.time = 0;
     this.loser = false;
@@ -231,9 +269,18 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
 
   updateScore: function() {
     this.$(".snake-score").html(JST["snakescore"]({time: this.time, snake: this.snake}));
+
     if(this.loser) {
-      this.$(".snake-score").append(JST["restartSnake"]());
+      if(this.collection.length < 10) {
+        this.$(".snake-highscore-form-area").html(JST["snakeHighScoreInput"]());
+      } else if(this.collection.at(9).get("score") < this.snake.score) {
+        this.$(".snake-highscore-form-area").html(JST["snakeHighScoreInput"]());
+        var old_model = this.collection.pop();
+        old_model.destroy();
+      }
+      this.$el.append(JST["restartSnake"]());
     }
+
   },
 
   addItems: function () {
@@ -307,9 +354,18 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
   },
 
   moveSnake: function(event) {
-    event.preventDefault();
+    if(event.target === $(".snake-score-name")[0]) return;
 
+    event.preventDefault();
     switch(event.which) {
+      case 72:
+        this.$(".snake-high-score-button").click();
+      break;
+
+      case 80:
+        //pause
+      break;
+
       case 37:
         this.snake.turn("W");
       break;
@@ -327,11 +383,11 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
       break;
 
       case 13:
-        $(".restart-snake").click();
+        this.$(".restart-snake").click();
       break;
 
       case 8:
-        $(".snake-menu").click();
+        this.$(".snake-menu").click();
       break;
 
       default: return;
