@@ -101,8 +101,8 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
     this.loser = false;
 
     this.maxRocks = parseInt(this.maxX * this.maxY * 0.2);
-    this.maxApples = parseInt(this.maxX * this.maxY * 0.1);
-    this.maxTunnels = parseInt(this.maxX * this.maxY * 0.05);
+    this.maxApples = parseInt(2*this.maxX/3);
+    this.maxTunnels = parseInt(this.maxX/3);
 
     this.numRocks = 0;
     this.numApples = 0;
@@ -243,7 +243,7 @@ SnakeGame.Views.SnakeBoard = Backbone.CompositeView.extend({
     if(this.numTunnels < this.maxTunnels && Math.random() < this.tunnelProb){
       this.generateTunnel();
     }
-    if(this.numRocks < this.maxRock && Math.random() < this.rockProb){
+    if(this.numRocks < this.maxRocks && Math.random() < this.rockProb){
       this.generateRock();
     }
   },

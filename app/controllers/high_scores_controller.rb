@@ -17,6 +17,20 @@ class HighScoresController < ApplicationController
     @high_score = HighScore.new
   end
 
+  def snake
+    binds = {
+      gamename: params[:gamename],
+      difficulty: params[:difficulty],
+      dimension: params[:dimension]
+    }
+
+    @high_scores = HighScore.all.where(<<-SQL, binds)
+                                        high_scores.gamename = :gamename AND
+                                        high_scores.difficulty = :difficulty AND
+                                        high_scores.dimenion = :dimenion
+                                      SQL
+    render @high_scores
+  end
   # GET /high_scores/1/edit
   def edit
   end
@@ -69,6 +83,6 @@ class HighScoresController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def high_score_params
-      params.require(:high_score).permit(:name, :score)
+      params.require(:high_score).permit(:name, :score, :gamename, :difficulty, :dimension)
     end
 end

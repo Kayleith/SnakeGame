@@ -19,6 +19,9 @@ ActiveRecord::Schema.define(version: 20150525161923) do
   create_table "high_scores", force: :cascade do |t|
     t.string   "name",       null: false
     t.integer  "score",      null: false
+    t.string   "difficulty"
+    t.integer  "dimension"
+    t.string   "gamename",   null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

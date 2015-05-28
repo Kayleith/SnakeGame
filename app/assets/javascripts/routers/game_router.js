@@ -12,7 +12,8 @@ SnakeGame.Routers.GameRouter = Backbone.Router.extend({
   },
 
   gameSelect: function() {
-
+    var gameSelect = new SnakeGame.Views.GameSelect();
+    this._swapView(gameSelect);
   },
 
   spaceinvaders: function() {

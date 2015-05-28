@@ -44,6 +44,34 @@ h1 {
   font-size: 12px;
   text-align: center;
 }
+.arcade-window {
+  display:block;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -10000;
+}
+.root-menu {
+  display:block;
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.root-menu h1 {
+  font-size: 30px;
+}
+
+.root-menu-item {
+  display: block;
+  height: 20px;
+}
+.root-menu-item:hover {
+  background: black;
+  color: white;
+}
 
 .board > div{
   content: "";
