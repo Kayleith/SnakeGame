@@ -35,13 +35,6 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.MovingCube.position.set(0, 25.1, 0);
     this.scene.add( this.MovingCube );
 
-
-    // var skyBoxGeometry = new THREE.BoxGeometry( 10000, 10000, 10000 );
-  	// var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
-  	// var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-    // this.scene.add(skyBox);
-  	// this.scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
-
     this.makeStars();
   },
 
@@ -54,66 +47,33 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
   makeStars: function() {
 
-  	var particle, material;
-    this.particles = [];
+  	var material = new THREE.PointCloudMaterial({
+      color: 0xFFFFFF,
+      size: 50,
+      map: THREE.ImageUtils.loadTexture(SnakeGame.star),
+      blending: THREE.AdditiveBlending,
+      transparent: true
+    });
 
-    function generateSprite() {
+    this.particles = new THREE.Geometry();
 
-				var canvas = document.createElement( 'canvas' );
-				canvas.width = 16;
-				canvas.height = 16;
-
-				var context = canvas.getContext( '2d' );
-				var gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
-				gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
-				gradient.addColorStop( 0.2, 'rgba(0,255,255,1)' );
-				gradient.addColorStop( 0.4, 'rgba(0,0,64,1)' );
-				gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
-
-				context.fillStyle = gradient;
-				context.fillRect( 0, 0, canvas.width, canvas.height );
-
-				return canvas;
-
-		}
-
-    function particleRender( context ) {
-
-				// we get passed a reference to the canvas context
-				context.beginPath();
-				// and we just have to draw our shape at 0,0 - in this
-				// case an arc from 0 to 2Pi radians or 360º - a full circle!
-				context.arc( 0, 0, 1, 0,  Math.PI * 2, true );
-				context.fill();
-		}
-
-  	for ( var zpos= -10000; zpos < 10000; zpos+=20 ) {
-
-  		// we make a particle material and pass through the
-  		// colour and custom particle render function we defined.
-
-  		// material = new THREE.ParticleCanvasMaterial( { color: 0xffffff, program: particleRender } );
-      // material = new THREE.PointCloudMaterial( { map: new THREE.Texture( generateSprite() ), blending: THREE.AdditiveBlending } );
-  		// make the particle
+  	for ( var zpos= -10000; zpos < 10000; zpos+=10 ) {
   		particle = new THREE.Particle(material);
 
-  		// give it a random x and y position between -500 and 500
-  		particle.position.x = Math.random() * 10000 - 500;
-  		particle.position.y = Math.random() * 10000 - 500;
+      var pX = Math.random() * 20000 - 10000,
+          pY = Math.random() * 20000 - 10000,
+          pZ = zpos,
+          particle = new THREE.Vector3(pX, pY, pZ);
 
-  		// set its z position
-  		particle.position.z = zpos;
+      particle.velocity = new THREE.Vector3(0, -Math.random(), 0);
 
-  		// scale it up a bit
-  		particle.scale.x = particle.scale.y = 10;
-
-  		// add it to the scene
-  		this.scene.add( particle );
-
-  		// and to the array of particles.
-  		this.particles.push(particle);
+      this.particles.vertices.push(particle);
   	}
 
+    this.particleSystem = new THREE.PointCloud( this.particles, material);
+    this.particleSystem.sortParticles = true;
+
+    this.scene.add(this.particleSystem);
   },
 
   start: function() {
@@ -122,15 +82,16 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     var rendering = function () {
       requestAnimationFrame( rendering );
       this.renderer.render(this.scene, this.camera);
-      this.update();
+      this.updateShip();
+      this.updateStar();
     }.bind(this);
 
     rendering();
   },
 
-  update: function() {
+  updateShip: function() {
   	var delta = this.clock.getDelta(); // seconds.
-  	var moveDistance = 200 * delta; // 200 pixels per second
+  	var moveDistance = 1000 * delta; // 200 pixels per second
   	var rotateAngle = Math.PI / 2 * delta;   // pi/2 radians (90 degrees) per second
 
   	// local transformations
@@ -166,5 +127,33 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.camera.position.y = cameraOffset.y;
     this.camera.position.z = cameraOffset.z;
     this.camera.lookAt( this.MovingCube.position );
+  },
+
+  updateStar: function() {
+    var pCount = 200;
+    while (pCount--) {
+
+      // get the particle
+      var particle = this.particles.vertices[pCount];
+
+      // check if we need to reset
+      if (particle.y < -10000) {
+        particle.y = 10000;
+        particle.velocity.y = 0;
+      }
+
+      // update the velocity with
+      // a splat of randomniz
+      particle.velocity.y -= Math.random() * .1;
+
+      // and the position
+      particle.y = particle.y + particle.velocity.y;
+    }
+
+    // flag to the particle system
+    // that we've changed its vertices.
+    this.particleSystem.
+      geometry.
+      __dirtyVertices = true;
   }
 });
