@@ -22,7 +22,8 @@ SnakeGame.Routers.GameRouter = Backbone.Router.extend({
   },
 
   asteroids: function() {
-
+    var gameView = new SnakeGame.Views.Asteroids();
+    this._swapView(gameView);
   },
 
   snake: function() {
