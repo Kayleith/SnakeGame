@@ -15,6 +15,11 @@
 //= require underscore
 //= require backbone
 //= require snake_game
+//= require three.min
+//= require THREEx.KeyboardState
+//= require THREEx.FullScreen
+//= require THREEx.WindowResize
+//= require Detector
 //= require_tree ../templates
 //= require_tree ./utils
 //= require_tree ./models
