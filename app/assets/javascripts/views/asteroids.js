@@ -123,9 +123,6 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     for ( var zpos= -10000; zpos < 10000; zpos+=10 ) {
 
       var particle = new THREE.Vector3(Math.random() * 20000 - 10000,Math.random() * 20000 - 10000, zpos);
-
-      particle.velocity = new THREE.Vector3(0, Math.random() * 1000, 0);
-
       this.particles.vertices.push(particle);
     }
 
@@ -140,7 +137,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     var sizes = [1000, 500, 250];
 
     for (var i = 0; i < num; i++) {
-      var geometry = new THREE.SphereGeometry(Math.floor(Math.random() * 3), 32, 32 );
+      var geometry = new THREE.SphereGeometry(1000, 32, 32 );
       var material = new THREE.MeshBasicMaterial( {color: 0xCC0000} );
       var sphere = new THREE.Mesh( geometry, material );
 
@@ -148,6 +145,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           py = Math.random() * 20000 - 10000,
           pz = Math.random() * 20000 - 10000;
       sphere.position.set(px,py,pz);
+      sphere.velocity = new THREE.Vector3((Math.random() * 200) - 100, (Math.random() * 200) - 100, (Math.random() * 200) - 100);
 
       this.scene.add( sphere );
       this.asteroids.push(sphere);
@@ -155,6 +153,27 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   },
 
   updateAsteroids: function() {
+    this.asteroids.forEach(function(asteroid){
+      if (asteroid.position.y < -10000) {
+        asteroid.position.y = 10000;
+      }
+      if (asteroid.position.x < -10000) {
+        asteroid.position.x = 10000;
+      }
+      if (asteroid.position.z < -10000) {
+        asteroid.position.z = 10000;
+      }
+      if (asteroid.position.y > 10000) {
+        asteroid.position.y = -10000;
+      }
+      if (asteroid.position.x > 10000) {
+        asteroid.position.x = -10000;
+      }
+      if (asteroid.position.z > 10000) {
+        asteroid.position.z = -10000;
+      }
 
+      asteroid.position.add(asteroid.velocity);
+    });
   }
 });
