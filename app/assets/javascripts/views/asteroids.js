@@ -210,15 +210,17 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   			this.scene.remove(b);
       }
       for (var j = this.asteroids.length - 1; j >= 0; j--) {
-        var dis_x = p.x - this.asteroids[j].x;
-        var dis_z = p.z - this.asteroids[j].z;
+        a = this.asteroids[j];
+
+        var dis_x = p.x - a.x;
+        var dis_z = p.z - a.z;
         var distance = Math.sqrt(Math.pow(dis_x, 2) + Math.pow(dis_z,2));
 
-        if(distance <= asteroids[j].radius + 2) {
+        if(distance <= a.radius + 2) {
           this.bullets.splice(i, 1);
           this.scene.remove(b);
           this.asteroids.splice(j, 1);
-          this.scene.remove(asteroids[j]);
+          this.scene.remove(a);
         }
       }
     }
