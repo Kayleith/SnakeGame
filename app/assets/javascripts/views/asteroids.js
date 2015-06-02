@@ -24,14 +24,17 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     THREEx.WindowResize(this.renderer, this.camera);
     THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 
-    geometry = new THREE.BoxGeometry(50, 50, 50, 1, 1, 1);
-    material = new THREE.MeshBasicMaterial( { color: 0xffffff} );
-    this.MovingCube = new THREE.Mesh( geometry, material );
-    this.MovingCube.position.set(0, 0, 0);
-    this.scene.add( this.MovingCube );
+    var geometry = new THREE.BoxGeometry(50, 50, 50, 1, 1, 1);
+    var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, overdraw:true} );
+    this.ship = new THREE.Mesh( geometry, material );
+    this.ship.position.set(0, 0, 0);
+    this.ship.velocity = new THREE.Vector3(0,0,0);
+    this.scene.add( this.ship );
 
     this.makeStars();
     this.makeAsteroids(50);
+    this.bullets = [];
+    this.lastFire = Date.now();
   },
 
   render: function() {
@@ -46,6 +49,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     window.setInterval(function() {
           this.updateShip();
           this.updateAsteroids();
+          this.updateBullets();
           this.renderer.render(this.scene, this.camera);
         }.bind(this), 1000/30);
   },
@@ -56,49 +60,52 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   	var rotateAngle = Math.PI / 2 * delta;
 
   	if ( this.keyboard.pressed("W") )
-  		this.MovingCube.translateZ( -moveDistance );
-  	// if ( this.keyboard.pressed("S") )
-    //   this.MovingCube.translateZ(  moveDistance );
-  	// if ( this.keyboard.pressed("Q") )
-    //   this.MovingCube.translateX( -moveDistance );
-  	// if ( this.keyboard.pressed("E") )
-    //   this.MovingCube.translateX(  moveDistance );
+  		this.ship.translateZ( -moveDistance );
+  	if ( this.keyboard.pressed("S") )
+      this.ship.translateZ(  moveDistance );
+  	if ( this.keyboard.pressed("Q") )
+      this.ship.translateX( -moveDistance );
+  	if ( this.keyboard.pressed("E") )
+      this.ship.translateX(  moveDistance );
 
-    if(this.MovingCube.position.x > 20000)
-      this.MovingCube.position.x = -20000;
-    else if(this.MovingCube.position.x < -20000)
-      this.MovingCube.position.x = 20000;
-    else if(this.MovingCube.position.z > 20000)
-      this.MovingCube.position.z = -20000;
-    else if(this.MovingCube.position.z < -20000)
-      this.MovingCube.position.z = 20000;
-    // else if(this.MovingCube.position.y > 20000)
-    //   this.MovingCube.position.y = -20000;
-    // else if(this.MovingCube.position.y < -20000)
-    //   this.MovingCube.position.y  = -20000;
+    if(this.ship.position.x > 20000)
+      this.ship.position.x = -20000;
+    else if(this.ship.position.x < -20000)
+      this.ship.position.x = 20000;
+    else if(this.ship.position.z > 20000)
+      this.ship.position.z = -20000;
+    else if(this.ship.position.z < -20000)
+      this.ship.position.z = 20000;
+    // else if(this.ship.position.y > 20000)
+    //   this.ship.position.y = -20000;
+    // else if(this.ship.position.y < -20000)
+    //   this.ship.position.y  = -20000;
 
   	var rotation_matrix = new THREE.Matrix4().identity();
   	if ( this.keyboard.pressed("A") )
-      this.MovingCube.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle);
+      this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle);
   	if ( this.keyboard.pressed("D") )
-      this.MovingCube.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
+      this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
   	// if ( this.keyboard.pressed("R") )
-    //   this.MovingCube.rotateOnAxis( new THREE.Vector3(1,0,0), rotateAngle);
+    //   this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), rotateAngle);
   	// if ( this.keyboard.pressed("F") )
-    //   this.MovingCube.rotateOnAxis( new THREE.Vector3(1,0,0), -rotateAngle);
+    //   this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), -rotateAngle);
+    if ( this.keyboard.pressed("F") )
+      this.shoot();
+
 
   	if ( this.keyboard.pressed("Z") )
   	{
-      this.MovingCube.position.set(0,0,0);
-      this.MovingCube.rotation.set(0,0,0);
+      this.ship.position.set(0,0,0);
+      this.ship.rotation.set(0,0,0);
   	}
 
   	var relativeCameraOffset = new THREE.Vector3(0,50,300);
-  	var cameraOffset = relativeCameraOffset.applyMatrix4( this.MovingCube.matrixWorld );
+  	var cameraOffset = relativeCameraOffset.applyMatrix4( this.ship.matrixWorld );
     this.camera.position.x = cameraOffset.x;
     this.camera.position.y = cameraOffset.y;
     this.camera.position.z = cameraOffset.z;
-    this.camera.lookAt( this.MovingCube.position );
+    this.camera.lookAt(this.ship.position);
   },
 
   makeStars: function() {
@@ -141,6 +148,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       sphere.position.set(px,py,pz);
 
       sphere.velocity = new THREE.Vector3((Math.random() * 150) - 75, 0, (Math.random() * 150) - 75);
+      sphere.spin = new THREE.Vector3(sphere.velocity.x, sphere.velocity.y, sphere.velocity.z).normalize();
 
       this.scene.add(sphere);
       this.asteroids.push(sphere);
@@ -166,8 +174,53 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       } else if (asteroid.position.z > 20000) {
         asteroid.position.z = -20000;
       }
-
       asteroid.position.add(asteroid.velocity);
+      var rotateAngle = Math.PI / 2 * asteroid.velocity.length()/5000;
+      asteroid.rotateOnAxis( asteroid.spin, rotateAngle);
     });
+  },
+
+  shoot: function() {
+    var fireTime = Date.now();
+    if(fireTime - this.lastFire < 500) return;
+
+    this.lastFire = fireTime;
+
+    var sphereMaterial = new THREE.MeshBasicMaterial({color: 0x39FF14});
+    var sphereGeo = new THREE.SphereGeometry(2, 6, 6);
+    var sphere = new THREE.Mesh(sphereGeo, sphereMaterial);
+    var vector = new THREE.Vector3(this.camera.position.x, 0, this.camera.position.z);
+
+    sphere.position.set(this.ship.position.x, 0, this.ship.position.z);
+    sphere.ray = new THREE.Ray(this.camera.position, vector.sub(this.ship.position).normalize().negate());
+
+    this.bullets.push(sphere);
+    this.scene.add(sphere);
+
+    return sphere;
+  },
+
+  updateBullets: function() {
+    for (var i = this.bullets.length-1; i >= 0; i--) {
+		  var b = this.bullets[i], p = b.position, d = b.ray.direction;
+      b.translateX(100 * d.x);
+      b.translateZ(100 * d.z);
+      if (b.position.x < -20000 || b.position.x > 20000 || b.position.z < -20000 || b.position.z > 20000) {
+        this.bullets.splice(i, 1);
+  			this.scene.remove(b);
+      }
+      for (var j = this.asteroids.length - 1; j >= 0; j--) {
+        var dis_x = p.x - this.asteroids[j].x;
+        var dis_z = p.z - this.asteroids[j].z;
+        var distance = Math.sqrt(Math.pow(dis_x, 2) + Math.pow(dis_z,2));
+
+        if(distance <= asteroids[j].radius + 2) {
+          this.bullets.splice(i, 1);
+          this.scene.remove(b);
+          this.asteroids.splice(j, 1);
+          this.scene.remove(asteroids[j]);
+        }
+      }
+    }
   }
 });
