@@ -212,8 +212,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       for (var j = this.asteroids.length - 1; j >= 0; j--) {
         a = this.asteroids[j];
 
-        var dis_x = p.x - a.x;
-        var dis_z = p.z - a.z;
+        var dis_x = p.x - a.position.x;
+        var dis_z = p.z - a.position.z;
         var distance = Math.sqrt(Math.pow(dis_x, 2) + Math.pow(dis_z,2));
 
         if(distance <= a.radius + 2) {
