@@ -188,7 +188,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.lastFire = fireTime;
 
     var sphereMaterial = new THREE.MeshBasicMaterial({color: 0x39FF14});
-    var sphereGeo = new THREE.SphereGeometry(2, 6, 6);
+    var sphereGeo = new THREE.CylinderGeometry( 2, 2, 20, 32 );
     var sphere = new THREE.Mesh(sphereGeo, sphereMaterial);
     var vector = new THREE.Vector3(this.camera.position.x, 0, this.camera.position.z);
 
