@@ -85,6 +85,58 @@ window.SnakeGame = {
     var Rock = SnakeGame.Rock = function(x, y) {
       this.position = new Coord(x, y);
     };
+
+
+    SnakeGame.makeExplosion = function(x, y, z, scene, color) {
+      var movementSpeed = 80;
+      var totalObjects = 1000;
+
+      var sizeRandomness = 4000;
+      var colorChoice = [0xfe1112, 0xf46d3b, 0xfffe48, 0xfaffac, 0x9e4938];
+      this.scene = scene;
+      /////////////////////////////////
+      var dirs = [];
+
+      var geometry = new THREE.Geometry();
+      // geometry.x = x;
+      // geometry.y = y;
+      // geometry.z = z;
+
+      var colors = [];
+      for (i = 0; i < totalObjects; i ++)
+      {
+        var vertex = new THREE.Vector3();
+        vertex.x = x;
+        vertex.y = y;
+        vertex.z = z;
+
+        colors.push(new THREE.Color(colorChoice[Math.floor(Math.random()*5)]));
+
+        geometry.vertices.push( vertex );
+        dirs.push({x:(Math.random() * movementSpeed)-(movementSpeed/2),y:(Math.random() * movementSpeed)-(movementSpeed/2),z:(Math.random() * movementSpeed)-(movementSpeed/2)});
+      }
+      geometry.colors = colors;
+      var material = new THREE.PointCloudMaterial( { size: 50, transparent: true, opacity: 0.7, vertexColors: THREE.VertexColors });
+      var particles = new THREE.PointCloud( geometry, material );
+
+      this.object = particles;
+      this.status = true;
+
+      this.scene.add( this.object  );
+
+      this.update = function(){
+        if (this.status === true){
+          var pCount = totalObjects;
+          while(pCount--) {
+            var particle =  this.object.geometry.vertices[pCount];
+            particle.y += dirs[pCount].y;
+            particle.x += dirs[pCount].x;
+            particle.z += dirs[pCount].z;
+          }
+          this.object.geometry.verticesNeedUpdate = true;
+        }
+      };
+    }
   }
 };
 
