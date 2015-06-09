@@ -67,10 +67,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   	var rotateAngle = Math.PI / 2 * delta;
 
   	if ( this.keyboard.pressed("W") )
-      this.ship.velocity -= 10;
+      this.ship.velocity -= 5;
   		// this.ship.translateZ( -moveDistance );
   	if ( this.keyboard.pressed("S") )
-      this.ship.velocity += 10;
+      this.ship.velocity += 5;
       // this.ship.translateZ(  moveDistance );
   	// if ( this.keyboard.pressed("Q") )
     //   this.ship.translateX( -moveDistance );
@@ -102,8 +102,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     if ( this.keyboard.pressed("space") )
       this.shoot();
 
-    if (this.ship.velocity < -200)
-      this.ship.velocity = -200;
+    if (this.ship.velocity < -150)
+      this.ship.velocity = -150;
     if (this.ship.velocity > 0)
       this.ship.velocity = 0;
 
