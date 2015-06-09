@@ -159,10 +159,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       var sphere = new THREE.Mesh( geometry, material );
       sphere.radius = rad;
 
-      var px = Math.random() * 40000 - 20000,
-          py = 0,
-          pz = Math.random() * 40000 - 20000;
-      sphere.position.set(px,py,pz);
+      sphere.position.set(a.position.x,a.position.y,a.position.z);
 
       sphere.velocity = new THREE.Vector3((Math.random() * 150) - 75, 0, (Math.random() * 150) - 75);
       sphere.spin = new THREE.Vector3(sphere.velocity.x, sphere.velocity.y, sphere.velocity.z).normalize();
