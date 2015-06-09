@@ -19,6 +19,7 @@
   left: 10px;
   position: absolute;
   z-index: 100;
+  background: grey;
 }
 p {
   background-color: #EEEEEE;

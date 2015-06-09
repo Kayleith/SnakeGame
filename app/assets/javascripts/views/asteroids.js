@@ -35,7 +35,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.scene.add( this.ship );
 
     this.makeStars();
-    this.makeAsteroids(50);
+    this.makeAsteroids(10);
+    this.level = 1;
     this.bullets = [];
     this.parts = [];
     this.lastFire = Date.now();
@@ -69,12 +70,28 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     context.clearRect(0, 0, 201, 201);
 	  context.font = '10px Helvetica';
     context.fillStyle = '#AA33FF';
-    var center = new THREE.Vector3(this.camera.position.x/200 + 100, 0, (this.camera.position.z - 600)/200 + 100);
+    var center = new THREE.Vector3(this.ship.position.x/200 + 100, 0, this.ship.position.z/200 + 100);
     context.fillRect(center.x, center.z, 5, 5);
 
     this.asteroids.forEach(function(asteroid) {
       context.fillStyle = '#000000';
-      context.fillRect(asteroid.position.x/200 + 100, asteroid.position.z/200 + 100, 5, 5);
+      context.beginPath();
+
+      context.arc(
+        asteroid.position.x/200 + 100,
+        asteroid.position.z/200 + 100,
+        asteroid.radius/100,
+        0,
+        2 * Math.PI,
+        false
+      );
+
+      context.stroke();
+    });
+
+    this.bullets.forEach(function(bullet) {
+      context.fillStyle = '#39FF14';
+      context.fillRect(bullet.position.x/200 + 100, bullet.position.z/200 + 100, 2, 2);
     });
   },
 
@@ -288,7 +305,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       b.translateY((100 - this.ship.velocity)  * d.y);
       b.translateZ((100 - this.ship.velocity)  * d.z);
 
-      if (b.position.x < -this.mapSize || b.position.x > this.mapSize || b.position.z < -this.mapSize || b.position.z > this.mapSize || b.position.y < -this.mapSize || b.position.y > this.mapSize) {
+      if (p.x < -this.mapSize || p.x > this.mapSize || p.z < -this.mapSize || p.z > this.mapSize || p.y < -this.mapSize || p.y > this.mapSize) {
         this.bullets.splice(i, 1);
   			this.scene.remove(b);
       }
