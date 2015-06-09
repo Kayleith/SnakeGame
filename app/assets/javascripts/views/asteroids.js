@@ -81,11 +81,11 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       this.ship.position.x = -20000;
     else if(this.ship.position.x < -20000)
       this.ship.position.x = 20000;
-    else if(this.ship.position.z > 20000)
+    if(this.ship.position.z > 20000)
       this.ship.position.z = -20000;
     else if(this.ship.position.z < -20000)
       this.ship.position.z = 20000;
-    else if(this.ship.position.y > 20000)
+    if(this.ship.position.y > 20000)
       this.ship.position.y = -20000;
     else if(this.ship.position.y < -20000)
       this.ship.position.y  = -20000;
