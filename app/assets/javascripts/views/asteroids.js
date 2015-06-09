@@ -68,12 +68,12 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
   	if ( this.keyboard.pressed("W") )
   		this.ship.translateZ( -moveDistance );
-  	if ( this.keyboard.pressed("S") )
-      this.ship.translateZ(  moveDistance );
-  	if ( this.keyboard.pressed("Q") )
-      this.ship.translateX( -moveDistance );
-  	if ( this.keyboard.pressed("E") )
-      this.ship.translateX(  moveDistance );
+  	// if ( this.keyboard.pressed("S") )
+    //   this.ship.translateZ(  moveDistance );
+  	// if ( this.keyboard.pressed("Q") )
+    //   this.ship.translateX( -moveDistance );
+  	// if ( this.keyboard.pressed("E") )
+    //   this.ship.translateX(  moveDistance );
 
     if(this.ship.position.x > 20000)
       this.ship.position.x = -20000;
