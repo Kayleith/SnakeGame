@@ -61,12 +61,14 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           this.updateExplosions();
           this.renderer.render(this.scene, this.camera);
         }.bind(this), 1000/30);
-    window.setInterval(this.drawRadar, 1000);
+    window.setInterval(this.drawRadar.bind(this), 1000);
   },
 
   drawRadar: function() {
     var context = document.getElementById('radar').getContext('2d');
 	  context.font = '10px Helvetica';
+    context.fillStyle = '#AA33FF';
+    context.fillRect(101, 101, 1, 1);
   },
 
   updateShip: function() {
