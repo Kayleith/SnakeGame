@@ -211,6 +211,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
         this.parts.push( new SnakeGame.makeExplosion(this.ship.position.x, this.ship.position.y, this.ship.position.z, this.scene));
         this.scene.remove(this.ship);
         window.setTimeout(function(){
+          this.ship.velocity = 0;
           this.ship.position.set(0,0,0);
           this.ship.rotation.set(0,0,0);
           this.shield = Date.now();
