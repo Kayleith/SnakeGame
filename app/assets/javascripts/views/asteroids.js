@@ -177,7 +177,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
   updateAsteroids: function() {
     $('#asteroids').html(this.asteroids.length);
-    
+
     this.asteroids.forEach(function(asteroid) {
       if (asteroid.position.y < -20000) {
         asteroid.position.y = 20000;
@@ -214,6 +214,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
         this.parts.push( new SnakeGame.makeExplosion(this.ship.position.x, this.ship.position.y, this.ship.position.z, this.scene));
         this.scene.remove(this.ship);
         window.setTimeout(function(){
+          this.deaths++;
           $('#lives').html(this.deaths);
           this.ship.velocity = 0;
           this.ship.position.set(0,0,0);
