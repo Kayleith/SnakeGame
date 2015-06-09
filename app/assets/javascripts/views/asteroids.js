@@ -2,6 +2,9 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   template: JST["asteroids"],
 
   initialize: function() {
+    this.mapSize = 20000;
+    this.maxSpeed = 150;
+
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2( 0x000000, 0.00015 );
 
@@ -9,7 +12,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.clock = new THREE.Clock();
 
     var SCREEN_WIDTH = window.innerWidth - 10, SCREEN_HEIGHT = window.innerHeight - 10;
-    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 40000;
+    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = this.mapSize*2;
     this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
     this.scene.add(this.camera);
 
@@ -58,6 +61,12 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           this.updateExplosions();
           this.renderer.render(this.scene, this.camera);
         }.bind(this), 1000/30);
+    window.setInterval(this.drawRadar, 1000);
+  },
+
+  drawRadar: function() {
+    var context = document.getElementById('radar').getContext('2d');
+	  context.font = '10px Helvetica';
   },
 
   updateShip: function() {
@@ -78,18 +87,18 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   	// if ( this.keyboard.pressed("E") )
     //   this.ship.translateX(  moveDistance );
 
-    if(this.ship.position.x > 20000)
-      this.ship.position.x = -20000;
-    else if(this.ship.position.x < -20000)
-      this.ship.position.x = 20000;
-    if(this.ship.position.z > 20000)
-      this.ship.position.z = -20000;
-    else if(this.ship.position.z < -20000)
-      this.ship.position.z = 20000;
-    if(this.ship.position.y > 20000)
-      this.ship.position.y = -20000;
-    else if(this.ship.position.y < -20000)
-      this.ship.position.y  = -20000;
+    if(this.ship.position.x > this.mapSize)
+      this.ship.position.x = -this.mapSize;
+    else if(this.ship.position.x < -this.mapSize)
+      this.ship.position.x = this.mapSize;
+    if(this.ship.position.z > this.mapSize)
+      this.ship.position.z = -this.mapSize;
+    else if(this.ship.position.z < -this.mapSize)
+      this.ship.position.z = this.mapSize;
+    if(this.ship.position.y > this.mapSize)
+      this.ship.position.y = -this.mapSize;
+    else if(this.ship.position.y < -this.mapSize)
+      this.ship.position.y  = -this.mapSize;
 
   	var rotation_matrix = new THREE.Matrix4().identity();
   	if ( this.keyboard.pressed("A") )
@@ -103,8 +112,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     if ( this.keyboard.pressed("space") )
       this.shoot();
 
-    if (this.ship.velocity < -150)
-      this.ship.velocity = -150;
+    if (this.ship.velocity < -this.maxSpeed)
+      this.ship.velocity = -this.maxSpeed;
     if (this.ship.velocity > 0)
       this.ship.velocity = 0;
 
@@ -129,8 +138,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
     this.particles = new THREE.Geometry();
 
-    for ( var zpos= -20000; zpos < 20000; zpos+=1 ) {
-      var particle = new THREE.Vector3(Math.random() * 40000 - 20000,Math.random() * 40000 - 20000, zpos);
+    for ( var zpos= -this.mapSize; zpos < this.mapSize; zpos+=1 ) {
+      var particle = new THREE.Vector3(Math.random() * this.mapSize*2 - this.mapSize,Math.random() * this.mapSize*2 - this.mapSize, zpos);
       this.particles.vertices.push(particle);
     }
 
@@ -162,9 +171,9 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       var sphere = new THREE.Mesh( geometry, material );
       sphere.radius = rad;
 
-      var px = Math.random() * 40000 - 20000,
+      var px = Math.random() * this.mapSize*2 - this.mapSize,
           py = 0,
-          pz = Math.random() * 40000 - 20000;
+          pz = Math.random() * this.mapSize*2 - this.mapSize;
       sphere.position.set(px,py,pz);
 
       sphere.velocity = new THREE.Vector3((Math.random() * 150) - 75, 0, (Math.random() * 150) - 75);
@@ -179,22 +188,22 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     $('#asteroids').html(this.asteroids.length);
 
     this.asteroids.forEach(function(asteroid) {
-      if (asteroid.position.y < -20000) {
-        asteroid.position.y = 20000;
-      } else if (asteroid.position.y > 20000) {
-        asteroid.position.y = -20000;
+      if (asteroid.position.y < -this.mapSize) {
+        asteroid.position.y = this.mapSize;
+      } else if (asteroid.position.y > this.mapSize) {
+        asteroid.position.y = -this.mapSize;
       }
 
-      if (asteroid.position.x < -20000) {
-        asteroid.position.x = 20000;
-      } else if (asteroid.position.x > 20000) {
-        asteroid.position.x = -20000;
+      if (asteroid.position.x < -this.mapSize) {
+        asteroid.position.x = this.mapSize;
+      } else if (asteroid.position.x > this.mapSize) {
+        asteroid.position.x = -this.mapSize;
       }
 
-      if (asteroid.position.z < -20000) {
-        asteroid.position.z = 20000;
-      } else if (asteroid.position.z > 20000) {
-        asteroid.position.z = -20000;
+      if (asteroid.position.z < -this.mapSize) {
+        asteroid.position.z = this.mapSize;
+      } else if (asteroid.position.z > this.mapSize) {
+        asteroid.position.z = -this.mapSize;
       }
 
       asteroid.position.add(asteroid.velocity);
@@ -208,7 +217,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
       if(distance <= asteroid.radius + 50) {
         var dieTime = Date.now();
-        if(dieTime - this.lastDied < 3000) return;
+        if(dieTime - this.lastDied < 2000) return;
         if(dieTime - this.shield < 3000) return;
         this.lastDied = Date.now();
         this.parts.push( new SnakeGame.makeExplosion(this.ship.position.x, this.ship.position.y, this.ship.position.z, this.scene));
@@ -221,7 +230,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           this.ship.rotation.set(0,0,0);
           this.shield = Date.now();
           this.scene.add(this.ship);
-        }.bind(this), 3000);
+        }.bind(this), 2000);
       }
     }.bind(this));
   },
@@ -253,7 +262,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       b.translateY((100 - this.ship.velocity)  * d.y);
       b.translateZ((100 - this.ship.velocity)  * d.z);
 
-      if (b.position.x < -20000 || b.position.x > 20000 || b.position.z < -20000 || b.position.z > 20000 || b.position.y < -20000 || b.position.y > 20000) {
+      if (b.position.x < -this.mapSize || b.position.x > this.mapSize || b.position.z < -this.mapSize || b.position.z > this.mapSize || b.position.y < -this.mapSize || b.position.y > this.mapSize) {
         this.bullets.splice(i, 1);
   			this.scene.remove(b);
       }
