@@ -15,7 +15,7 @@ gem 'ejs'
 gem 'rails_12factor'
 gem 'kaminari'
 gem 'sprockets', '2.11.0'
-
+gem "autoprefixer-rails"
 group :doc do
   gem 'sdoc', require: false
 end

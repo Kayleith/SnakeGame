@@ -148,8 +148,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       var detail = Math.random() + 0.0000001;
       for(var angle = 0.0; angle < 2*Math.PI ; angle+= .1) {
         var delta = Math.random() < 0.5 ? 1 : -1;
-        var radius = rad * (1 + 0.1*Math.random()*delta);
-        pts.push(new THREE.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius));
+        var radius = rad + (1 + 50*Math.random()*delta);
+        pts.push(new THREE.Vector3(Math.cos(angle) * radius, angle, Math.sin(angle) * radius));
       }
 
       var geometry = new THREE.LatheGeometry( pts, 16 );
@@ -272,23 +272,23 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
               var detail = Math.random() + 0.0000001;
               for(var angle = 0.0; angle < 2*Math.PI ; angle+= .1) {
                 var delta = Math.random() < 0.5 ? 1 : -1;
-                var radius = rad * (1 + 0.1*Math.random()*delta);
-                pts.push(new THREE.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius));
+                var radius = rad + (1 + 50*Math.random()*delta);
+                pts.push(new THREE.Vector3(Math.cos(angle) * radius, angle, Math.sin(angle) * radius));
               }
 
               var geometry = new THREE.LatheGeometry( pts, 16 );
               geometry.center();
 
-              var material = new THREE.MeshBasicMaterial( {color: 0x6A6B6B, wireframe: true, map: THREE.ImageUtils.loadTexture(SnakeGame.asteroid), blending: THREE.AdditiveBlending} );
+              var material = new THREE.MeshBasicMaterial( {color: 0x6A6B6B, map: THREE.ImageUtils.loadTexture(SnakeGame.asteroid), blending: THREE.AdditiveBlending} );
               var sphere = new THREE.Mesh( geometry, material );
               sphere.radius = rad;
 
-              sphere.position.set(a.position.x,a.position.y,a.position.z);
+              var px = Math.random() * 40000 - 20000,
+                  py = 0,
+                  pz = Math.random() * 40000 - 20000;
+              sphere.position.set(px,py,pz);
 
-              var random_x = Math.random() < 0.5 ? 1 : -1;
-              var random_z = Math.random() < 0.5 ? 1 : -1;
-
-              sphere.velocity = new THREE.Vector3((Math.random() + 1) * a.velocity.x * random_x, 0, (Math.random() + 1) * a.velocity.z * random_z);
+              sphere.velocity = new THREE.Vector3((Math.random() * 150) - 75, 0, (Math.random() * 150) - 75);
               sphere.spin = new THREE.Vector3(sphere.velocity.x, sphere.velocity.y, sphere.velocity.z).normalize();
 
               this.scene.add(sphere);
