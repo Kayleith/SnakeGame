@@ -88,6 +88,8 @@ window.SnakeGame = {
 
 
     SnakeGame.makeExplosion = function(x, y, z, scene, color) {
+      this.created = Date.now();
+
       var movementSpeed = 80;
       var totalObjects = 1000;
 
@@ -135,6 +137,10 @@ window.SnakeGame = {
           }
           this.object.geometry.verticesNeedUpdate = true;
         }
+      };
+
+      this.remove = function() {
+        this.scene.remove(this.object);
       };
     }
   }

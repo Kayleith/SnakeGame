@@ -46,7 +46,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   },
 
   render: function() {
-    var content = this.template({asteroids: this.asteroids});
+    var content = this.template({asteroids: this.numAsteroids});
     this.$el.html(content);
     this.start();
     return this;
@@ -60,15 +60,22 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           this.updateBullets();
           this.updateExplosions();
           this.renderer.render(this.scene, this.camera);
+          this.drawRadar();
         }.bind(this), 1000/30);
-    window.setInterval(this.drawRadar.bind(this), 1000);
   },
 
   drawRadar: function() {
     var context = document.getElementById('radar').getContext('2d');
+    context.clearRect(0, 0, 201, 201);
 	  context.font = '10px Helvetica';
     context.fillStyle = '#AA33FF';
-    context.fillRect(101, 101, 1, 1);
+    var center = new THREE.Vector3(this.camera.position.x/200 + 100, 0, (this.camera.position.z - 600)/200 + 100);
+    context.fillRect(center.x, center.z, 5, 5);
+
+    this.asteroids.forEach(function(asteroid) {
+      context.fillStyle = '#000000';
+      context.fillRect(asteroid.position.x/200 + 100, asteroid.position.z/200 + 100, 5, 5);
+    });
   },
 
   updateShip: function() {
@@ -152,14 +159,31 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   },
 
   makeAsteroids: function(num) {
+    this.numAsteroids = num;
     this.asteroids = [];
     var sizes = [800, 400, 200, 100];
 
     for (var i = 0; i < num; i++) {
       var rad = sizes[Math.floor(Math.random() * 4)];
 
+      switch(rad) {
+        case 800:
+          this.numAsteroids += 12;
+          break;
+        case 400:
+          this.numAsteroids += 8;
+          break;
+        case 200:
+          this.numAsteroids += 4;
+          break;
+        case 100:
+          this.numAsteroids += 0;
+          break;
+      }
+
       var pts = [];
       var detail = Math.random() + 0.0000001;
+
       for(var angle = 0.0; angle < 2*Math.PI ; angle+= .1) {
         var delta = Math.random() < 0.5 ? 1 : -1;
         var radius = rad + (1 + 50*Math.random()*delta);
@@ -187,7 +211,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   },
 
   updateAsteroids: function() {
-    $('#asteroids').html(this.asteroids.length);
+    $('#asteroids').html(this.numAsteroids);
 
     this.asteroids.forEach(function(asteroid) {
       if (asteroid.position.y < -this.mapSize) {
@@ -239,7 +263,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
   shoot: function() {
     var fireTime = Date.now();
-    if(fireTime - this.lastFire < 400) return;
+    if(fireTime - this.lastFire < 300) return;
 
     this.lastFire = fireTime;
 
@@ -279,6 +303,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
         if(distance <= a.radius + 2) {
           this.kills++;
+          this.numAsteroids--;
           $('#score').html(this.kills * 100);
 
           this.parts.push( new SnakeGame.makeExplosion(p.x, p.y, p.z, this.scene));
@@ -325,6 +350,11 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     var pCount = this.parts.length;
     while(pCount--) {
       this.parts[pCount].update();
+
+      if(Date.now() - this.parts[pCount].created > 10000) {
+        this.parts[pCount].remove();
+        this.parts.splice(pCount, 1);
+      }
     }
   }
 });
