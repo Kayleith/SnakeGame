@@ -28,7 +28,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, overdraw:true} );
     this.ship = new THREE.Mesh( geometry, material );
     this.ship.position.set(0, 0, 0);
-    this.ship.velocity = new THREE.Vector3(0,0,0);
+    this.ship.velocity = 0;
     this.scene.add( this.ship );
 
     this.makeStars();
@@ -63,13 +63,15 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     if(dieTime - this.lastDied < 3000) return;
 
   	var delta = this.clock.getDelta();
-  	var moveDistance = 1000 * delta;
+  	// var moveDistance = 1000 * delta;
   	var rotateAngle = Math.PI / 2 * delta;
 
   	if ( this.keyboard.pressed("W") )
-  		this.ship.translateZ( -moveDistance );
-  	// if ( this.keyboard.pressed("S") )
-    //   this.ship.translateZ(  moveDistance );
+      this.ship.velocity -= 10;
+  		// this.ship.translateZ( -moveDistance );
+  	if ( this.keyboard.pressed("S") )
+      this.ship.velocity += 10;
+      // this.ship.translateZ(  moveDistance );
   	// if ( this.keyboard.pressed("Q") )
     //   this.ship.translateX( -moveDistance );
   	// if ( this.keyboard.pressed("E") )
@@ -100,12 +102,12 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     if ( this.keyboard.pressed("space") )
       this.shoot();
 
+    if (this.ship.velocity < -200)
+      this.ship.velocity = -200;
+    if (this.ship.velocity > 0)
+      this.ship.velocity = 0;
 
-  	if ( this.keyboard.pressed("Z") )
-  	{
-      this.ship.position.set(0,0,0);
-      this.ship.rotation.set(0,0,0);
-  	}
+    this.ship.translateZ( this.ship.velocity );
 
   	var relativeCameraOffset = new THREE.Vector3(0,100,600);
   	var cameraOffset = relativeCameraOffset.applyMatrix4( this.ship.matrixWorld );
@@ -126,7 +128,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
     this.particles = new THREE.Geometry();
 
-    for ( var zpos= -20000; zpos < 20000; zpos+=10 ) {
+    for ( var zpos= -20000; zpos < 20000; zpos+=1 ) {
       var particle = new THREE.Vector3(Math.random() * 40000 - 20000,Math.random() * 40000 - 20000, zpos);
       this.particles.vertices.push(particle);
     }
@@ -159,7 +161,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       var sphere = new THREE.Mesh( geometry, material );
       sphere.radius = rad;
 
-      sphere.position.set(a.position.x,a.position.y,a.position.z);
+      var px = Math.random() * 40000 - 20000,
+          py = 0,
+          pz = Math.random() * 40000 - 20000;
+      sphere.position.set(px,py,pz);
 
       sphere.velocity = new THREE.Vector3((Math.random() * 150) - 75, 0, (Math.random() * 150) - 75);
       sphere.spin = new THREE.Vector3(sphere.velocity.x, sphere.velocity.y, sphere.velocity.z).normalize();
@@ -238,9 +243,9 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   updateBullets: function() {
     for (var i = this.bullets.length-1; i >= 0; i--) {
 		  var b = this.bullets[i], p = b.position, d = b.ray.direction;
-      b.translateX(100 * d.x);
-      b.translateY(100 * d.y);
-      b.translateZ(100 * d.z);
+      b.translateX((100 - this.ship.velocity) * d.x);
+      b.translateY((100 - this.ship.velocity)  * d.y);
+      b.translateZ((100 - this.ship.velocity)  * d.z);
 
       if (b.position.x < -20000 || b.position.x > 20000 || b.position.z < -20000 || b.position.z > 20000 || b.position.y < -20000 || b.position.y > 20000) {
         this.bullets.splice(i, 1);
@@ -280,10 +285,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
               var sphere = new THREE.Mesh( geometry, material );
               sphere.radius = rad;
 
-              var px = Math.random() * 40000 - 20000,
-                  py = 0,
-                  pz = Math.random() * 40000 - 20000;
-              sphere.position.set(px,py,pz);
+              sphere.position.set(a.position.x, a.position.y, a.position.z);
 
               sphere.velocity = new THREE.Vector3((Math.random() * 150) - 75, 0, (Math.random() * 150) - 75);
               sphere.spin = new THREE.Vector3(sphere.velocity.x, sphere.velocity.y, sphere.velocity.z).normalize();
