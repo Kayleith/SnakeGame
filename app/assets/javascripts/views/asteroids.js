@@ -38,10 +38,12 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.lastFire = Date.now();
     this.lastDied = Date.now();
     this.shield = Date.now();
+    this.kills = 0;
+    this.deaths = 0;
   },
 
   render: function() {
-    var content = this.template();
+    var content = this.template({asteroids: this.asteroids});
     this.$el.html(content);
     this.start();
     return this;
@@ -49,7 +51,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
   start: function() {
     this.$("#asteroid-canvas")[0].appendChild( this.renderer.domElement );
-    window.setInterval(function() {
+    this.interval = window.setInterval(function() {
           this.updateShip();
           this.updateAsteroids();
           this.updateBullets();
@@ -63,7 +65,6 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     if(dieTime - this.lastDied < 3000) return;
 
   	var delta = this.clock.getDelta();
-  	// var moveDistance = 1000 * delta;
   	var rotateAngle = Math.PI / 2 * delta;
 
   	if ( this.keyboard.pressed("W") )
@@ -175,6 +176,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   },
 
   updateAsteroids: function() {
+    $('#asteroids').html(this.asteroids.length);
+    
     this.asteroids.forEach(function(asteroid) {
       if (asteroid.position.y < -20000) {
         asteroid.position.y = 20000;
@@ -211,6 +214,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
         this.parts.push( new SnakeGame.makeExplosion(this.ship.position.x, this.ship.position.y, this.ship.position.z, this.scene));
         this.scene.remove(this.ship);
         window.setTimeout(function(){
+          $('#lives').html(this.deaths);
           this.ship.velocity = 0;
           this.ship.position.set(0,0,0);
           this.ship.rotation.set(0,0,0);
@@ -262,6 +266,9 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
         var distance = Math.sqrt(Math.pow(dis_x, 2) + Math.pow(dis_z,2) + Math.pow(dis_y,2));
 
         if(distance <= a.radius + 2) {
+          this.kills++;
+          $('#score').html(this.kills * 100);
+
           this.parts.push( new SnakeGame.makeExplosion(p.x, p.y, p.z, this.scene));
 
           this.bullets.splice(i, 1);
