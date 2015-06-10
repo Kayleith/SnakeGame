@@ -27,8 +27,16 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     THREEx.WindowResize(this.renderer, this.camera);
     THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 
-    var geometry = new THREE.BoxGeometry(50, 50, 50, 1, 1, 1);
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, overdraw:true} );
+    var materialArray = [];
+  	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
+  	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
+  	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
+  	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
+  	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( SnakeGame.spaceship ),transparent: true}));
+  	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
+  	var material = new THREE.MeshFaceMaterial(materialArray);
+    var geometry = new THREE.BoxGeometry(82, 26, 50, 1, 1, 1);
+
     this.ship = new THREE.Mesh( geometry, material );
     this.ship.position.set(0, 0, 0);
     this.ship.velocity = 0;
@@ -132,9 +140,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   	if ( this.keyboard.pressed("D") )
       this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
   	// if ( this.keyboard.pressed("R") )
+    // //   this.ship.translateY( 10 );
     //   this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), rotateAngle);
   	// if ( this.keyboard.pressed("F") )
-      // this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), -rotateAngle);
+    //   this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), -rotateAngle);
     if ( this.keyboard.pressed("space") )
       this.shoot();
 
@@ -145,7 +154,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
     this.ship.translateZ( this.ship.velocity );
 
-  	var relativeCameraOffset = new THREE.Vector3(0,100,600);
+  	var relativeCameraOffset = new THREE.Vector3(0, 50,600);
   	var cameraOffset = relativeCameraOffset.applyMatrix4( this.ship.matrixWorld );
     this.camera.position.x = cameraOffset.x;
     this.camera.position.y = cameraOffset.y;
@@ -185,13 +194,13 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
       switch(rad) {
         case 800:
-          this.numAsteroids += 64;
+          this.numAsteroids += 14;
           break;
         case 400:
-          this.numAsteroids += 16;
+          this.numAsteroids += 6;
           break;
         case 200:
-          this.numAsteroids += 4;
+          this.numAsteroids += 2;
           break;
         case 100:
           this.numAsteroids += 0;
@@ -284,18 +293,17 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
     this.lastFire = fireTime;
 
-    var sphereMaterial = new THREE.MeshBasicMaterial({color: 0x39FF14});
-    var sphereGeo = new THREE.CylinderGeometry( 2, 2, 20, 32 );
-    var sphere = new THREE.Mesh(sphereGeo, sphereMaterial);
-    var vector = new THREE.Vector3(this.camera.position.x, 0, this.camera.position.z);
+    var bulletMaterial = new THREE.MeshBasicMaterial({color: 0x39FF14});
+    var bulletGeo = new THREE.CylinderGeometry( 2, 2, 20, 32 );
+    var bullet = new THREE.Mesh(bulletGeo, bulletMaterial);
 
-    sphere.position.set(this.ship.position.x, 0, this.ship.position.z);
-    sphere.ray = new THREE.Ray(this.camera.position, vector.sub(this.ship.position).normalize().negate());
+    var vector = new THREE.Vector3(this.camera.position.x, this.camera.position.y - 50, this.camera.position.z);
 
-    this.bullets.push(sphere);
-    this.scene.add(sphere);
+    bullet.position.set(this.ship.position.x, this.ship.position.y, this.ship.position.z);
+    bullet.ray = new THREE.Ray(this.camera.position, vector.sub(this.ship.position).normalize().negate());
 
-    return sphere;
+    this.bullets.push(bullet);
+    this.scene.add(bullet);
   },
 
   updateBullets: function() {
@@ -329,7 +337,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           this.scene.remove(b);
 
           if(a.radius > 100) {
-            for (var k = 0; k < 4; k++) {
+            for (var k = 0; k < 2; k++) {
               var rad = a.radius/2;
 
               var pts = [];
