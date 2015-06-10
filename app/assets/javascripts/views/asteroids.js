@@ -32,7 +32,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
   	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
   	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
-  	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( SnakeGame.spaceship ),transparent: true}));
+  	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( SnakeGame.spaceship ),transparent: true, opacity: 0.7}));
   	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
   	var material = new THREE.MeshFaceMaterial(materialArray);
     var geometry = new THREE.BoxGeometry(82, 26, 50, 1, 1, 1);
