@@ -185,10 +185,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
       switch(rad) {
         case 800:
-          this.numAsteroids += 12;
+          this.numAsteroids += 64;
           break;
         case 400:
-          this.numAsteroids += 8;
+          this.numAsteroids += 16;
           break;
         case 200:
           this.numAsteroids += 4;
