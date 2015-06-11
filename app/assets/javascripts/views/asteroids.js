@@ -27,8 +27,6 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
     this.scene.add(this.camera);
 
-
-
     var materialArray = [];
   	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
   	materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( "" ),transparent: true, opacity: 0.0 }));
@@ -50,23 +48,24 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.bullets = [];
     this.parts = [];
     this.lastFire = Date.now();
-    this.lastDied = Date.now();
-    this.shield = Date.now();
+    this.lastDied = Date.now() - 3000;
+    this.shield =  Date.now();
+    this.loop = Date.now() - 10000;
     this.score = 0;
     this.lives = 5;
     this.high_score = 0;
+    this.loopId = 0;
   },
 
   render: function() {
     var content = this.template({asteroids: this.numAsteroids, lives: this.lives, score: this.score, level: this.level, high_score: this.high_score});
     this.$el.html(content);
+    this.$("#asteroid-canvas")[0].appendChild( this.renderer.domElement );
     this.start();
     return this;
   },
 
   start: function() {
-    this.$("#asteroid-canvas")[0].appendChild( this.renderer.domElement );
-
     this.interval = window.setInterval(function() {
           this.updateShip();
           this.updateAsteroids();
@@ -111,53 +110,70 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     var dieTime = Date.now();
     if(dieTime - this.lastDied < 3000) return;
 
+    var loopTime = Date.now();
+
   	var delta = this.clock.getDelta();
   	var rotateAngle = Math.PI / 2 * delta;
 
-  	if ( this.keyboard.pressed("W") )
-      this.ship.velocity -= 5;
-  		// this.ship.translateZ( -moveDistance );
-  	if ( this.keyboard.pressed("S") )
-      this.ship.velocity += 5;
-      // this.ship.translateZ(  moveDistance );
-  	// if ( this.keyboard.pressed("Q") )
-    //   this.ship.translateX( -moveDistance );
-  	// if ( this.keyboard.pressed("E") )
-    //   this.ship.translateX(  moveDistance );
+    if ( this.keyboard.pressed("Q") && loopTime - this.loop > 10000) {
+      this.loop = Date.now();
 
-    if(this.ship.position.x > this.mapSize)
-      this.ship.position.x = -this.mapSize;
-    else if(this.ship.position.x < -this.mapSize)
-      this.ship.position.x = this.mapSize;
-    if(this.ship.position.z > this.mapSize)
-      this.ship.position.z = -this.mapSize;
-    else if(this.ship.position.z < -this.mapSize)
-      this.ship.position.z = this.mapSize;
-    if(this.ship.position.y > this.mapSize)
-      this.ship.position.y = -this.mapSize;
-    else if(this.ship.position.y < -this.mapSize)
-      this.ship.position.y  = -this.mapSize;
+      var max = this.ship.position.y + 1000;
+      var step = 50;
 
-  	var rotation_matrix = new THREE.Matrix4().identity();
-  	if ( this.keyboard.pressed("A") ) {
-      this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle);
+      this.loopId = window.setInterval(function() {
+          this.ship.position.y += step;
+          if(this.ship.position.y === max) {
+            step = -step;
+          }
+          if(this.ship.position.y === 0) {
+            window.clearInterval(this.loopId);
+          }
+        }.bind(this), 1000/30);
+    } else {
+
+    	if ( this.keyboard.pressed("W") )
+        this.ship.velocity -= 5;
+    		// this.ship.translateZ( -moveDistance );
+    	if ( this.keyboard.pressed("S") )
+        this.ship.velocity += 5;
+        // this.ship.translateZ(  moveDistance );
+
+    	// if ( this.keyboard.pressed("E") )
+      //   this.ship.translateX(  moveDistance );
+
+      if(this.ship.position.x > this.mapSize)
+        this.ship.position.x = -this.mapSize;
+      else if(this.ship.position.x < -this.mapSize)
+        this.ship.position.x = this.mapSize;
+      if(this.ship.position.z > this.mapSize)
+        this.ship.position.z = -this.mapSize;
+      else if(this.ship.position.z < -this.mapSize)
+        this.ship.position.z = this.mapSize;
+      if(this.ship.position.y > this.mapSize)
+        this.ship.position.y = -this.mapSize;
+      else if(this.ship.position.y < -this.mapSize)
+        this.ship.position.y  = -this.mapSize;
+
+    	var rotation_matrix = new THREE.Matrix4().identity();
+    	if ( this.keyboard.pressed("A") ) {
+        this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle);
+      }
+    	if ( this.keyboard.pressed("D") ) {
+        this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
+      }
+    	// if ( this.keyboard.pressed("R") )
+      // //   this.ship.translateY( 10 );
+      //   this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), rotateAngle);
+    	// if ( this.keyboard.pressed("F") )
+      //   this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), -rotateAngle);
+      if ( this.keyboard.pressed("space") )
+        this.shoot();
     }
-  	if ( this.keyboard.pressed("D") ) {
-      this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
-    }
-  	// if ( this.keyboard.pressed("R") )
-    // //   this.ship.translateY( 10 );
-    //   this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), rotateAngle);
-  	// if ( this.keyboard.pressed("F") )
-    //   this.ship.rotateOnAxis( new THREE.Vector3(1,0,0), -rotateAngle);
-    if ( this.keyboard.pressed("space") )
-      this.shoot();
-
     if (this.ship.velocity < -this.maxSpeed)
       this.ship.velocity = -this.maxSpeed;
     if (this.ship.velocity > 0)
       this.ship.velocity = 0;
-
     this.ship.translateZ( this.ship.velocity );
 
   	var relativeCameraOffset = new THREE.Vector3(0, 50,600);
@@ -367,6 +383,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           if(this.score !== 0 && this.score % 5000 === 0) {
             this.lives++;
             $('#lives').html(this.lives);
+          }
+          if(this.score > this.high_score) {
+            this.high_score = this.score;
+            $('#high_score').html(this.score);
           }
 
           this.parts.push( new SnakeGame.makeExplosion(p.x, p.y, p.z, this.scene));
