@@ -1,4 +1,28 @@
 <section id="asteroid-canvas"></section>
 <canvas id="radar" width="201" height="201"></canvas>
-<div id="hud"><p>Deaths: <span id="lives">0</span><br />Score: <span id="score">0</span><br />Asteroids left: <span id="asteroids"><%=asteroids%></span></p></div>
-<div id="credits"><p>Created by <a href="">Brian Kang</a> using <a href="http://mrdoob.github.com/three.js/">Three.js</a><br />WASD to move, Space to shoot</p></div>
+<div id="hud">
+  <p>
+    Level:
+      <span id="level">
+        <%= level %>
+      </span>
+      <br />
+    Asteroids left:
+      <span id="asteroids">
+        <%=asteroids%>
+      </span>
+      <br />
+    Lives:
+      <span id="lives">
+        <%=lives %>
+      </span>
+      <br />
+    Score:
+      <span id="score">
+        <%= score %>
+      </span>
+      <br />
+  </p>
+</div>
+<div id="credits"><p>Created by <a href="">Brian Kang</a> using <a href="http://mrdoob.github.com/three.js/">Three.js</a><br />WASD to move, Space to shoot<br /> 1 bonus life every 5000 points</p></div>
+<section id="backView" width="300" height="300"></section>
