@@ -30,6 +30,47 @@
   z-index: 100;
   background: grey;
 }
+#notification {
+  display: block;
+  margin: auto;
+  color: white;
+  height: 10px;
+  position: absolute;
+  top: 40%; left: 0; right: 0;
+}
+
+#gameOver {
+  font-size: 60px;
+  display: none;
+  margin: auto;
+  color: white;
+  height: 10px;
+  position: absolute;
+  top: 40%; left: 0; right: 0;
+}
+
+#gameOver.visible {
+  display: block;
+  animation: fadeInLoad 2s;
+}
+
+@keyframes fadeInLoad {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeInLoad {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 p {
   background-color: #EEEEEE;

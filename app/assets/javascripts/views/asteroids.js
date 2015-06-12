@@ -23,8 +23,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 
     this.scene = new THREE.Scene();
-    // this.scene.fog = new THREE.FogExp2( 0x000000, 0.00015 );
     this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+    this.scene.fog = new THREE.FogExp2( 0x000000, 0.00015 );
     this.scene.add(this.camera);
 
     var materialArray = [];
@@ -44,18 +44,72 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
     this.makeStars();
     this.makeAsteroids(1);
+    this.addFog();
     this.level = 1;
     this.bullets = [];
-    this.bulletsGlow   = [];
+    this.bulletsGlow = [];
     this.parts = [];
     this.lastFire = Date.now();
     this.lastDied = Date.now() - 3000;
     this.shield =  Date.now();
     this.loop = Date.now() - 10000;
     this.score = 0;
-    this.lives = 5;
+    this.lives = 2;
     this.high_score = 0;
     this.loopId = 0;
+  },
+
+  events: {
+    "click .restart": "newGame"
+  },
+
+  newGame: function() {
+    this.asteroids.each
+    this.$("#gameOver").removeClass("visible");
+
+    this.asteroids.forEach(function(asteroid) {
+      this.scene.remove(asteroid);
+    }.bind(this));
+    this.bullets.forEach(function(bullet) {
+      this.scene.remove(bullet);
+    }.bind(this));
+    this.parts.forEach(function(explosion){
+      explosion.remove();
+    }.bind(this));
+
+    this.ship.position.set(0, 0, 0);
+    this.ship.velocity = 0;
+    this.scene.add( this.ship );
+    this.makeAsteroids(1);
+    this.score = 0;
+    $('#score').html(this.score);
+    this.level = 1;
+    $('#level').html(this.level);
+    this.bullets = [];
+    this.bulletsGlow = [];
+    this.parts = [];
+    this.lastFire = Date.now();
+    this.lastDied = Date.now() - 3000;
+    this.shield =  Date.now();
+    this.loop = Date.now() - 10000;
+    this.score = 0;
+    this.lives = 2;
+    $('#lives').html(this.lives);
+    this.loopId = 0;
+    this.start();
+  },
+
+  addFog: function() {
+    // var wireMaterial = new THREE.MeshBasicMaterial( { color: 0xff3333, wireframe: true, transparent: true } );
+    // // torus knot
+    // var colorMaterial = new THREE.MeshBasicMaterial( { color: 0xff3333, opacity: 0.01 } );
+    // var shape = new THREE.Mesh(new THREE.TorusKnotGeometry( 30, 6, 160, 10, 2, 5), colorMaterial);
+    // var skyBoxGeometry = new THREE.CubeGeometry( 4000, 4000, 4000 );
+  	// var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0xff3333, side: THREE.BackSide, opacity: 0.01 } );
+  	// var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
+    // skyBox.position.set(0, 0, 0);
+    // this.scene.add( skyBox );
+
   },
 
   render: function() {
@@ -67,6 +121,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   },
 
   start: function() {
+    this.$("#notification").html("Level " + this.level)
+    this.$("#notification").fadeIn(1000);
+    this.$("#notification").fadeOut(1000);
+
     this.interval = window.setInterval(function() {
           this.updateShip();
           this.updateAsteroids();
@@ -320,23 +378,29 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
   },
 
   nextLevel: function() {
+
     this.ship.velocity = 0;
     this.ship.position.set(0,0,0);
     this.shield = Date.now()+2000;
 
     for (var i = this.bullets.length-1; i >= 0; i--) {
-      this.bullets.splice(i, 1);
       this.scene.remove(this.bullets[i]);
       this.scene.remove(this.bulletsGlow[i]);
+      this.bullets.splice(i, 1);
       this.bulletsGlow.splice(i, 1);
     }
     this.level++;
-    $('#level').html(this.level);
+    this.$('#level').html(this.level);
+    this.$("#notification").html("Level " + this.level)
+    this.$("#notification").fadeIn(1000);
+    this.$("#notification").fadeOut(1000);
+
     this.maxASpeed = 50*(1 + this.level/10);
     this.makeAsteroids(Math.pow(2,this.level-1));
   },
 
   endGame: function() {
+    this.$("#gameOver").addClass("visible");
     window.clearInterval(this.interval);
   },
 
@@ -379,9 +443,9 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       this.bulletsGlow[i].translateZ((100 - this.ship.velocity)  * d.z);
 
       if (p.x < -this.mapSize || p.x > this.mapSize || p.z < -this.mapSize || p.z > this.mapSize || p.y < -this.mapSize || p.y > this.mapSize) {
+        this.scene.remove(b);
+        this.scene.remove(this.bulletsGlow[i]);
         this.bullets.splice(i, 1);
-  			this.scene.remove(b);
-  			this.scene.remove(this.bulletsGlow[i]);
         this.bulletsGlow.splice(i, 1);
       }
 
@@ -401,6 +465,9 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           if(this.score !== 0 && this.score % 5000 === 0) {
             this.lives++;
             $('#lives').html(this.lives);
+            this.$("#notification").html("+1 life")
+            this.$("#notification").fadeIn(1000);
+            this.$("#notification").fadeOut(1000);
           }
           if(this.score > this.high_score) {
             this.high_score = this.score;
@@ -409,9 +476,9 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
           this.parts.push( new SnakeGame.makeExplosion(p.x, p.y, p.z, this.scene));
 
-          this.bullets.splice(i, 1);
           this.scene.remove(b);
           this.scene.remove(this.bulletsGlow[i]);
+          this.bullets.splice(i, 1);
           this.bulletsGlow.splice(i, 1);
 
           if(a.radius > 100) {
@@ -442,8 +509,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
               this.asteroids.push(sphere);
             }
           }
-          this.asteroids.splice(j, 1);
           this.scene.remove(a);
+          this.asteroids.splice(j, 1);
         }
       }
     }
