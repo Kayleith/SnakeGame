@@ -3,7 +3,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
   initialize: function() {
     this.mapSize = 20000;
-    this.maxSpeed = 100;
+    this.maxSpeed = 150;
     this.maxASpeed = 50;
     this.keyboard = new THREEx.KeyboardState();
     this.clock = new THREE.Clock();
@@ -23,7 +23,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2( 0x000000, 0.00015 );
+    // this.scene.fog = new THREE.FogExp2( 0x000000, 0.00015 );
     this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
     this.scene.add(this.camera);
 
@@ -46,6 +46,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.makeAsteroids(1);
     this.level = 1;
     this.bullets = [];
+    this.bulletsGlow   = [];
     this.parts = [];
     this.lastFire = Date.now();
     this.lastDied = Date.now() - 3000;
@@ -194,9 +195,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     });
 
     var particles = new THREE.Geometry();
-
-    for ( var zpos= -this.mapSize; zpos < this.mapSize; zpos+=1 ) {
-      var particle = new THREE.Vector3(Math.random() * this.mapSize*2 - this.mapSize,Math.random() * this.mapSize*2 - this.mapSize, zpos);
+    var stars = this.mapSize + 5000;
+    for ( var zpos= -stars; zpos < stars; zpos+=1 ) {
+      var particle = new THREE.Vector3(Math.random() * stars*2 - stars,Math.random() * stars*2 - stars, zpos);
+      // var particle = new THREE.Vector3(Math.random() * this.mapSize*2 - this.mapSize,Math.random() * this.mapSize*2 - this.mapSize, zpos);
       particles.vertices.push(particle);
     }
 
@@ -325,6 +327,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     for (var i = this.bullets.length-1; i >= 0; i--) {
       this.bullets.splice(i, 1);
       this.scene.remove(this.bullets[i]);
+      this.scene.remove(this.bulletsGlow[i]);
+      this.bulletsGlow.splice(i, 1);
     }
     this.level++;
     $('#level').html(this.level);
@@ -351,8 +355,17 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     bullet.position.set(this.ship.position.x, this.ship.position.y, this.ship.position.z);
     bullet.ray = new THREE.Ray(this.camera.position, vector.sub(this.ship.position).normalize().negate());
 
-    this.bullets.push(bullet);
+
+    var customMaterial = new THREE.MeshBasicMaterial({color: 0x2AEB1D, transparent: true, opacity: 0.3});
+  	var bulletGlow = new THREE.Mesh( bulletGeo.clone() , customMaterial);
+    bulletGlow.position.set(this.ship.position.x, this.ship.position.y, this.ship.position.z);
+    bulletGlow.scale.multiplyScalar(2);
+
     this.scene.add(bullet);
+    this.scene.add(bulletGlow);
+
+    this.bullets.push(bullet);
+    this.bulletsGlow.push(bulletGlow);
   },
 
   updateBullets: function() {
@@ -361,10 +374,15 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
       b.translateX((100 - this.ship.velocity) * d.x);
       b.translateY((100 - this.ship.velocity)  * d.y);
       b.translateZ((100 - this.ship.velocity)  * d.z);
+      this.bulletsGlow[i].translateX((100 - this.ship.velocity) * d.x);
+      this.bulletsGlow[i].translateY((100 - this.ship.velocity)  * d.y);
+      this.bulletsGlow[i].translateZ((100 - this.ship.velocity)  * d.z);
 
       if (p.x < -this.mapSize || p.x > this.mapSize || p.z < -this.mapSize || p.z > this.mapSize || p.y < -this.mapSize || p.y > this.mapSize) {
         this.bullets.splice(i, 1);
   			this.scene.remove(b);
+  			this.scene.remove(this.bulletsGlow[i]);
+        this.bulletsGlow.splice(i, 1);
       }
 
       for (var j = this.asteroids.length - 1; j >= 0; j--) {
@@ -393,6 +411,8 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
           this.bullets.splice(i, 1);
           this.scene.remove(b);
+          this.scene.remove(this.bulletsGlow[i]);
+          this.bulletsGlow.splice(i, 1);
 
           if(a.radius > 100) {
             for (var k = 0; k < 2; k++) {
