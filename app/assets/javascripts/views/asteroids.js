@@ -3,7 +3,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
   initialize: function() {
     this.mapSize = 20000;
-    this.maxSpeed = 150;
+    this.maxSpeed = 120;
     this.maxASpeed = 50;
     this.keyboard = new THREEx.KeyboardState();
     this.clock = new THREE.Clock();
