@@ -24,7 +24,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
-    this.scene.fog = new THREE.FogExp2( 0x000000, 0.00015 );
+    this.scene.fog = new THREE.FogExp2( 0x000000, 0.000075 );
     this.scene.add(this.camera);
 
     var materialArray = [];
