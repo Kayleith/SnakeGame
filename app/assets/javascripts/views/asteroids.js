@@ -190,11 +190,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
           }
         }.bind(this), 1000/30);
     } else {
-
-    	if ( this.keyboard.pressed("W") )
+    	if ( this.keyboard.pressed("up") )
         this.ship.velocity -= 5;
     		// this.ship.translateZ( -moveDistance );
-    	if ( this.keyboard.pressed("S") )
+    	if ( this.keyboard.pressed("down") )
         this.ship.velocity += 5;
         // this.ship.translateZ(  moveDistance );
 
@@ -215,10 +214,10 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
         this.ship.position.y  = -this.mapSize;
 
     	var rotation_matrix = new THREE.Matrix4().identity();
-    	if ( this.keyboard.pressed("A") ) {
+    	if ( this.keyboard.pressed("left") ) {
         this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), rotateAngle);
       }
-    	if ( this.keyboard.pressed("D") ) {
+    	if ( this.keyboard.pressed("right") ) {
         this.ship.rotateOnAxis( new THREE.Vector3(0,1,0), -rotateAngle);
       }
     	// if ( this.keyboard.pressed("R") )
