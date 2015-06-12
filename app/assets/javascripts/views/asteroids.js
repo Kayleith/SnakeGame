@@ -3,7 +3,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
 
   initialize: function() {
     this.mapSize = 20000;
-    this.maxSpeed = 120;
+    this.maxSpeed = 150;
     this.maxASpeed = 50;
     this.keyboard = new THREEx.KeyboardState();
     this.clock = new THREE.Clock();
@@ -43,7 +43,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.scene.add( this.ship );
 
     this.makeStars();
-    this.makeAsteroids(1);
+    this.makeAsteroids(10);
     this.addFog();
     this.level = 1;
     this.bullets = [];
@@ -80,7 +80,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.ship.position.set(0, 0, 0);
     this.ship.velocity = 0;
     this.scene.add( this.ship );
-    this.makeAsteroids(1);
+    this.makeAsteroids(10);
     this.score = 0;
     $('#score').html(this.score);
     this.level = 1;
@@ -395,7 +395,7 @@ SnakeGame.Views.Asteroids = Backbone.CompositeView.extend({
     this.$("#notification").fadeOut(1000);
 
     this.maxASpeed = 50*(1 + this.level/10);
-    this.makeAsteroids(Math.pow(2,this.level-1));
+    this.makeAsteroids(10*Math.pow(2,this.level-1));
   },
 
   endGame: function() {
